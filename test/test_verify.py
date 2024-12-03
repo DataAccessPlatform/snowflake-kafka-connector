@@ -296,7 +296,22 @@ class KafkaTest:
 
         print(datetime.now().strftime("%H:%M:%S "), "=== Done ===", flush=True)
 
-    def create_iceberg_table_with_content(self, table_name: str, external_volume: str):
+    def enable_schema_evolution_for_iceberg(self, table: str):
+        self.snowflake_conn.cursor().execute("alter iceberg table {} set ENABLE_SCHEMA_EVOLUTION = true".format(table))
+
+    def create_empty_iceberg_table(self, table_name: str, external_volume: str):
+        sql = """
+            CREATE ICEBERG TABLE IF NOT EXISTS {} (
+                record_metadata OBJECT()
+            )
+            EXTERNAL_VOLUME = '{}'
+            CATALOG = 'SNOWFLAKE'
+            BASE_LOCATION = '{}'
+            ;
+        """.format(table_name, external_volume, table_name)
+        self.snowflake_conn.cursor().execute(sql)
+
+    def create_iceberg_table_with_sample_content(self, table_name: str, external_volume: str):
         sql = """
             CREATE ICEBERG TABLE IF NOT EXISTS {} (
                 record_content OBJECT(
