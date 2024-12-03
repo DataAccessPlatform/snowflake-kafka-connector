@@ -43,7 +43,7 @@ public class KCLogger {
    */
   public void info(String format, Object... vars) {
     if (this.logger.isInfoEnabled()) {
-      this.logger.info(this.getFormattedLogMessage(format, vars));
+      this.logger.warn(this.getFormattedLogMessage(format, vars));
     }
   }
 

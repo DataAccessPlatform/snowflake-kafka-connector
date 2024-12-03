@@ -34,6 +34,8 @@ import org.apache.kafka.common.config.Config;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SnowflakeSinkConnector implements SinkConnector for Kafka Connect framework.
@@ -45,6 +47,7 @@ import org.apache.kafka.connect.sink.SinkConnector;
  * running on Kafka Connect Workers.
  */
 public class SnowflakeSinkConnector extends SinkConnector {
+  private static final Logger log = LoggerFactory.getLogger(SnowflakeSinkConnector.class);
   // create logger without correlationId for now
   private static KCLogger LOGGER = new KCLogger(SnowflakeSinkConnector.class.getName());
 
@@ -72,6 +75,7 @@ public class SnowflakeSinkConnector extends SinkConnector {
 
   /** No-Arg constructor. Required by Kafka Connect framework */
   public SnowflakeSinkConnector() {
+    log.warn("SnowflakeSinkConnector:constructor");
     setupComplete = false;
   }
 
@@ -85,42 +89,55 @@ public class SnowflakeSinkConnector extends SinkConnector {
    */
   @Override
   public void start(final Map<String, String> parsedConfig) {
-    LOGGER.info("SnowflakeSinkConnector:starting...");
+    LOGGER.warn("SnowflakeSinkConnector:starting...");
 
-    Utils.checkConnectorVersion();
+    try {
+      Utils.checkConnectorVersion();
 
-    setupComplete = false;
-    connectorStartTime = System.currentTimeMillis();
-    config = new HashMap<>(parsedConfig);
+      setupComplete = false;
+      connectorStartTime = System.currentTimeMillis();
+      config = new HashMap<>(parsedConfig);
 
-    SnowflakeSinkConnectorConfig.setDefaultValues(config);
+      log.warn("Point 1");
+      SnowflakeSinkConnectorConfig.setDefaultValues(config);
 
-    // modify invalid connector name
-    Utils.convertAppName(config);
+      log.warn("Point 2");
+      // modify invalid connector name
+      Utils.convertAppName(config);
 
-    connectorConfigValidator.validateConfig(config);
+      log.warn("Point 3");
+      connectorConfigValidator.validateConfig(config);
 
-    // enable mdc logging if needed
-    KCLogger.toggleGlobalMdcLoggingContext(
-        Boolean.parseBoolean(
-            config.getOrDefault(
-                SnowflakeSinkConnectorConfig.ENABLE_MDC_LOGGING_CONFIG,
-                SnowflakeSinkConnectorConfig.ENABLE_MDC_LOGGING_DEFAULT)));
+      log.warn("Point 4");
+      // enable mdc logging if needed
+      KCLogger.toggleGlobalMdcLoggingContext(
+              Boolean.parseBoolean(
+                      config.getOrDefault(
+                              SnowflakeSinkConnectorConfig.ENABLE_MDC_LOGGING_CONFIG,
+                              SnowflakeSinkConnectorConfig.ENABLE_MDC_LOGGING_DEFAULT)));
 
-    // enable proxy
-    Utils.enableJVMProxy(config);
+      log.warn("Point 5");
+      // enable proxy
+      Utils.enableJVMProxy(config);
 
-    // create a persisted connection, and validate snowflake connection
-    // config as a side effect
-    conn = SnowflakeConnectionServiceFactory.builder().setProperties(config).build();
+      log.warn("Point 6");
+      // create a persisted connection, and validate snowflake connection
+      // config as a side effect
+      conn = SnowflakeConnectionServiceFactory.builder().setProperties(config).build();
 
-    telemetryClient = conn.getTelemetryClient();
+      log.warn("Point 7");
+      telemetryClient = conn.getTelemetryClient();
 
-    telemetryClient.reportKafkaConnectStart(connectorStartTime, this.config);
+      log.warn("Point 8");
+      telemetryClient.reportKafkaConnectStart(connectorStartTime, this.config);
 
-    setupComplete = true;
+      setupComplete = true;
 
-    LOGGER.info("SnowflakeSinkConnector:started");
+      LOGGER.warn("SnowflakeSinkConnector:started");
+    } catch(Throwable e) {
+      log.warn("Error starting connector", e);
+      throw e;
+    }
   }
 
   /**
@@ -134,7 +151,7 @@ public class SnowflakeSinkConnector extends SinkConnector {
   @Override
   public void stop() {
     setupComplete = false;
-    LOGGER.info("SnowflakeSinkConnector:stopped");
+    LOGGER.warn("SnowflakeSinkConnector:stopped");
     telemetryClient.reportKafkaConnectStop(connectorStartTime);
   }
 
@@ -172,7 +189,7 @@ public class SnowflakeSinkConnector extends SinkConnector {
       } else {
         counter++;
         try {
-          LOGGER.info("Sleeping 5000ms to allow setup to " + "complete.");
+          LOGGER.warn("Sleeping 5000ms to allow setup to " + "complete.");
           Thread.sleep(5000);
         } catch (InterruptedException ex) {
           LOGGER.warn("Waiting for setup to complete got " + "interrupted");
@@ -200,7 +217,7 @@ public class SnowflakeSinkConnector extends SinkConnector {
 
   @Override
   public Config validate(Map<String, String> connectorConfigs) {
-    LOGGER.debug("Validating connector Config: Start");
+    LOGGER.warn("Validating connector Config: Start");
     // cross-fields validation here
     Config result = super.validate(connectorConfigs);
 
@@ -309,7 +326,7 @@ public class SnowflakeSinkConnector extends SinkConnector {
       return result;
     }
 
-    LOGGER.info("Validated config with no error");
+    LOGGER.warn("Validated config with no error");
     return result;
   }
 

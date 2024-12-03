@@ -150,7 +150,7 @@ public class SnowflakeSinkTask extends SinkTask {
    */
   @Override
   public void start(final Map<String, String> parsedConfig) {
-    this.DYNAMIC_LOGGER.info("starting task...");
+    this.DYNAMIC_LOGGER.warn("starting task...");
 
     // get task id and start time
     this.taskStartTime = System.currentTimeMillis();
@@ -232,7 +232,7 @@ public class SnowflakeSinkTask extends SinkTask {
             .setSinkTaskContext(this.context)
             .build();
 
-    DYNAMIC_LOGGER.info(
+    DYNAMIC_LOGGER.warn(
         "task started, execution time: {} milliseconds",
         this.taskConfigId,
         getDurationFromStartMs(this.taskStartTime));
@@ -251,7 +251,7 @@ public class SnowflakeSinkTask extends SinkTask {
       this.sink.stop();
     }
 
-    this.DYNAMIC_LOGGER.info(
+    this.DYNAMIC_LOGGER.warn(
         "task stopped, total task runtime: {} milliseconds",
         getDurationFromStartMs(this.taskStartTime));
   }
@@ -265,7 +265,7 @@ public class SnowflakeSinkTask extends SinkTask {
   public void open(final Collection<TopicPartition> partitions) {
     long startTime = System.currentTimeMillis();
     this.sink.startPartitions(partitions, this.topic2table);
-    this.DYNAMIC_LOGGER.info(
+    this.DYNAMIC_LOGGER.warn(
         "task opened with {} partitions, execution time: {} milliseconds",
         partitions.size(),
         getDurationFromStartMs(startTime));
@@ -286,7 +286,7 @@ public class SnowflakeSinkTask extends SinkTask {
       this.sink.close(partitions);
     }
 
-    this.DYNAMIC_LOGGER.info(
+    this.DYNAMIC_LOGGER.warn(
         "task closed, execution time: {} milliseconds",
         this.taskConfigId,
         getDurationFromStartMs(startTime));
@@ -467,11 +467,11 @@ public class SnowflakeSinkTask extends SinkTask {
                 }
               };
         } else {
-          this.DYNAMIC_LOGGER.info("Errant record reporter is not configured.");
+          this.DYNAMIC_LOGGER.warn("Errant record reporter is not configured.");
         }
       } catch (NoClassDefFoundError | NoSuchMethodError e) {
         // Will occur in Connect runtimes earlier than 2.6
-        this.DYNAMIC_LOGGER.info(
+        this.DYNAMIC_LOGGER.warn(
             "Kafka versions prior to 2.6 do not support the errant record reporter.");
       }
     } else {

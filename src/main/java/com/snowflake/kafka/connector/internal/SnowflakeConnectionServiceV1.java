@@ -83,7 +83,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
       if (!proxyProperties.isEmpty()) {
         LOGGER.debug("Proxy properties are set, passing in JDBC while creating the connection");
       } else {
-        LOGGER.info("Establishing a JDBC connection with url:{}", url.getJdbcUrl());
+        LOGGER.warn("Establishing a JDBC connection with url:{}", url.getJdbcUrl());
       }
       this.conn = new SnowflakeDriver().connect(url.getJdbcUrl(), combinedProperties);
     } catch (SQLException e) {
@@ -98,7 +98,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
             .setAppName(this.connectorName)
             .setTaskID(this.taskID)
             .build();
-    LOGGER.info("initialized the snowflake connection");
+    LOGGER.warn("initialized the snowflake connection");
   }
 
   @Override
@@ -124,7 +124,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
       throw SnowflakeErrors.ERROR_2007.getException(e);
     }
 
-    LOGGER.info("create table {}", tableName);
+    LOGGER.warn("create table {}", tableName);
   }
 
   @Override
@@ -162,7 +162,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
           "Enable schema evolution failed on table: {}, message: {}", tableName, e.getMessage());
     }
 
-    LOGGER.info("Created table {} with only RECORD_METADATA column", tableName);
+    LOGGER.warn("Created table {} with only RECORD_METADATA column", tableName);
   }
 
   @Override
@@ -183,7 +183,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
           tableName);
       throw SnowflakeErrors.ERROR_2019.getException(e);
     }
-    LOGGER.info(
+    LOGGER.warn(
         "alter table {} add RECORD_METADATA column to align with iceberg format", tableName);
   }
 
@@ -205,7 +205,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
           tableName);
       throw SnowflakeErrors.ERROR_2018.getException(e);
     }
-    LOGGER.info(
+    LOGGER.warn(
         "alter table {} RECORD_METADATA column type to align with iceberg format", tableName);
   }
 
@@ -235,7 +235,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
     } catch (SQLException e) {
       throw SnowflakeErrors.ERROR_2009.getException(e);
     }
-    LOGGER.info("create pipe: {}", pipeName);
+    LOGGER.warn("create pipe: {}", pipeName);
   }
 
   @Override
@@ -262,7 +262,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
     } catch (SQLException e) {
       throw SnowflakeErrors.ERROR_2008.getException(e);
     }
-    LOGGER.info("create stage {}", stageName);
+    LOGGER.warn("create stage {}", stageName);
   }
 
   @Override
@@ -553,7 +553,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
     }
 
     try {
-      LOGGER.info("Trying to run query: {}", appendColumnQuery.toString());
+      LOGGER.warn("Trying to run query: {}", appendColumnQuery.toString());
       PreparedStatement stmt = conn.prepareStatement(appendColumnQuery.toString());
       stmt.setString(1, tableName);
       stmt.execute();
@@ -596,7 +596,7 @@ public class SnowflakeConnectionServiceV1 implements SnowflakeConnectionService 
       logColumn.append(columnName);
     }
     try {
-      LOGGER.info("Trying to run query: {}", dropNotNullQuery.toString());
+      LOGGER.warn("Trying to run query: {}", dropNotNullQuery.toString());
       PreparedStatement stmt = conn.prepareStatement(dropNotNullQuery.toString());
       stmt.setString(1, tableName);
       stmt.execute();

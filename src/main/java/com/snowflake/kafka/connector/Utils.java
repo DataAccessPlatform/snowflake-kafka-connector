@@ -152,7 +152,7 @@ public class Utils {
    * connector.
    */
   static boolean checkConnectorVersion() {
-    LOGGER.info("Current Snowflake Kafka Connector Version: {}", VERSION);
+    LOGGER.warn("Current Snowflake Kafka Connector Version: {}", VERSION);
     try {
       String latestVersion = null;
       int largestNumber = 0;
@@ -315,7 +315,7 @@ public class Utils {
         SnowflakeSinkConnectorConfig.getProperty(
             config, SnowflakeSinkConnectorConfig.JVM_NON_PROXY_HOSTS);
     if (host != null && port != null) {
-      LOGGER.info(
+      LOGGER.warn(
           "enable jvm proxy: {}:{} and bypass proxy for hosts: {}", host, port, nonProxyHosts);
 
       // enable https proxy

@@ -272,7 +272,7 @@ public class SnowflakeSinkConnectorConfig {
       Map<String, String> config, String field, Object value, String unitName) {
     if (!config.containsKey(field)) {
       config.put(field, value + "");
-      LOGGER.info("{} set to default {} {}", field, value, unitName);
+      LOGGER.warn("{} set to default {} {}", field, value, unitName);
     }
   }
 
